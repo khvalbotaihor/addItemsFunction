@@ -1,5 +1,6 @@
-import React, {ChangeEvent, useState, KeyboardEvent} from 'react';
+import React, {ChangeEvent} from 'react';
 import {FilterValuesType} from './App';
+import {AddItemForm} from "./components/AddItemFomr";
 
 export type TaskType = {
     id: string
@@ -21,6 +22,9 @@ type PropsType = {
 
 export function Todolist(props: PropsType) {
 
+    const AddNewTask = (title:string) =>{
+        props.addTask(title, props.id)
+    }
 
     const removeTodolist = () => props.removeTodolist(props.id)
 
@@ -32,10 +36,11 @@ export function Todolist(props: PropsType) {
         <h3> {props.title}
             <button onClick={removeTodolist}>x</button>
         </h3>
-        <AddItemForm addTask={props.addTask} todoListId={props.id} />
+        <AddItemForm addTask={AddNewTask} />
         <ul>
             {
                 props.tasks.map(t => {
+                    debugger
                     const onClickHandler = () => props.removeTask(t.id, props.id)
                     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
                         let newIsDoneValue = e.currentTarget.checked;
@@ -62,50 +67,5 @@ export function Todolist(props: PropsType) {
             </button>
         </div>
     </div>
-}
-
-type AddItemFormType = {
-    addTask : (title:string, todoListId:string) => void
-    todoListId:string
-}
-
-const AddItemForm = (props: AddItemFormType) => {
-    let [title, setTitle] = useState("")
-    let [error, setError] = useState<string | null>(null)
-
-    const addTask = () => {
-        let newTitle = title.trim();
-        if (newTitle !== "") {
-            props.addTask(newTitle, props.todoListId);
-            setTitle("");
-        } else {
-            setError("Title is required");
-        }
-    }
-
-    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.currentTarget.value)
-    }
-
-    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        setError(null);
-        if (e.charCode === 13) {
-            addTask();
-        }
-    }
-
-
-
-    return (
-        <div>
-            <input value={title}
-                   onChange={onChangeHandler}
-                   onKeyPress={onKeyPressHandler}
-                   className={error ? "error" : ""}
-            />
-            <button onClick={addTask}>+</button>
-            {error && <div className="error-message">{error}</div>}
-        </div>
-    )
 }
 
